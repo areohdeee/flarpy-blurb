@@ -6,72 +6,40 @@
     <title>Flarpy Blurb</title>
   </head>
   <body>
-    <style>
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-      }
-
-      #gameContainer {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-
-      #bird {
-        position: absolute;
-        top: 50%;
-        left: 50px;
-        width: 40px;
-        height: 30px;
-        background-color: #f2d121;
-        border-radius: 50%;
-        transition: top 0.3s;
-      }
-
-      .pipe {
-        position: absolute;
-        width: 50px;
-        background-color: #56aa67;
-      }
-
-      #pipeTop {
-        top: 0;
-      }
-
-      #pipeBottom {
-        bottom: 0;
-      }
-    </style>
-
     <div id="gameContainer">
       <div id="bird"></div>
       <div class="pipe" id="pipeTop"></div>
       <div class="pipe" id="pipeBottom"></div>
+      <div id="tooltip" class="tooltip">Ouch!</div>
     </div>
     <script>
       const bird = document.getElementById("bird");
       const pipeTop = document.getElementById("pipeTop");
       const pipeBottom = document.getElementById("pipeBottom");
+      const tooltip = document.getElementById("tooltip");
       let birdTop = 200;
       let gravity = 2;
       let pipeLeft = 400;
       let pipeHeight = Math.random() * (window.innerHeight - 200) + 50; // viewable area height
 
       document.addEventListener("keydown", flap);
+      document.addEventListener("touchstart", flap);
 
       function flap() {
         birdTop -= 50;
         bird.style.top = birdTop + "px";
+        updateTooltipPosition();
+      }
+
+      function updateTooltipPosition() {
+        tooltip.style.top = birdTop + "px";
+        tooltip.style.left = bird.offsetLeft + bird.offsetWidth + 10 + "px"; // Adjust as needed
       }
 
       function gameLoop() {
         birdTop += gravity;
         bird.style.top = birdTop + "px";
+        updateTooltipPosition();
 
         pipeLeft -= 5;
         pipeTop.style.left = pipeBottom.style.left = pipeLeft + "px";
@@ -95,13 +63,24 @@
           pipeLeft <= 90 &&
           pipeLeft + 50 >= 50
         ) {
+          console.log("Collision detected!"); // Check if collision is detected
+          showTooltip();
           gameOver();
         }
 
         requestAnimationFrame(gameLoop);
       }
 
+      function showTooltip() {
+        console.log("Showing tooltip..."); // Check if the function is called
+        tooltip.style.visibility = "visible";
+        setTimeout(() => {
+          tooltip.style.visibility = "hidden";
+        }, 2000); // Hide the tooltip after 2 seconds
+      }
+
       function gameOver() {
+        showTooltip();
         //alert("Game Over!");
         birdTop = 200;
         bird.style.top = birdTop + "px";
@@ -109,5 +88,55 @@
 
       gameLoop();
     </script>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+
+      #gameContainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      #bird {
+        position: absolute;
+        top: 50%;
+        left: 50px;
+        width: 40px;
+        height: 30px;
+        background-color: #c6ab12;
+        border-radius: 50%;
+        transition: top 0.3s;
+      }
+
+      .pipe {
+        position: absolute;
+        width: 50px;
+        background-color: #56aa67;
+      }
+
+      #pipeTop {
+        top: 0;
+      }
+
+      #pipeBottom {
+        bottom: 0;
+      }
+
+      .tooltip {
+        position: absolute;
+        background-color: #831414;
+        border: 2px solid #000;
+        padding: 10px;
+        border-radius: 10px;
+        visibility: hidden;
+      }
+    </style>
   </body>
 </html>
